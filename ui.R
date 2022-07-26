@@ -12,7 +12,7 @@ library(shinycssloaders)
 library(waiter)
 
 dashboardPage(
- # preloader = list(html = tagList(spin_1(), "Loading ..."), color = "#18191A"),
+ preloader = list(html = tagList(spin_1(), "Loading ..."), color = "#18191A"),
   fullscreen = TRUE,
   dashboardHeader(title = dashboardBrand(
     title = "Bid Procurement",
@@ -49,11 +49,11 @@ dashboardPage(
                   column(5,
                          box(title = "Distribution of Bid Price", 
                              solidHeader = TRUE, width = 12,status = "gray-dark",
-                             maximizable = TRUE, plotlyOutput("fig1", height = 300))),
+                             maximizable = TRUE, withSpinner(plotlyOutput("fig1", height = 300)))),
                   column(7,
                          box(title = "Most Frequent Bids", solidHeader = TRUE, width = 12,status = "gray-dark",
                              collapsed = FALSE,
-                             maximizable = TRUE, DTOutput("table1")))),
+                             maximizable = TRUE, withSpinner(DTOutput("table1"))))),
                 fluidRow(
                   box(title = "Average Bid Price Overtime", width = 12, status = "gray-dark",
                       solidHeader = TRUE, maximizable = TRUE,
@@ -73,7 +73,7 @@ dashboardPage(
                                                         collapsed = TRUE, solidHeader = TRUE, width = 12)))),
                          tabPanel("Bid Data Table", icon = icon("table"),
                                   br(),
-                                  DTOutput("table2")))
+                                  withSpinner(DTOutput("table2"))))
                 ),
                 fluidRow(
                   box(title = "Contact Name Average Bid Price Overtime", width = 12, status = "gray-dark",
@@ -81,7 +81,20 @@ dashboardPage(
                       uiOutput("cn_select"),
                       highchartOutput("fig3")))
               ) # end of fluid page 
-              ) # end of data analysis tab
+              ), # end of data analysis tab
+      tabItem("ad",
+              fluidPage(
+                fluidRow(box(title = "Anomalies in Bids", 
+                             solidHeader = TRUE, width = 12,status = "gray-dark",
+                             maximizable = TRUE, withSpinner(plotlyOutput("fig4")))),
+                fluidRow(box(title = "Breakdown of Anomalies in Bids", 
+                             solidHeader = TRUE, width = 12,status = "gray-dark",
+                             maximizable = TRUE, withSpinner(plotlyOutput("fig5")))),
+                fluidRow(box(title = "Bid Procurements with Anomalies", 
+                             solidHeader = TRUE, width = 12,status = "gray-dark",
+                             maximizable = TRUE, withSpinner(DTOutput("table3"))))
+              ) # end of fluid page
+              ) # end of anomaly detection tab
     ) # end of tab items
   ) # end of body
 ) # end of page

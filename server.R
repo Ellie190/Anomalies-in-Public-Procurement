@@ -90,7 +90,7 @@ server <- function(input, output) {
         box = list(visible = T),meanline = list(visible = T), x0 = 'Bid Price') %>% 
       layout(
         title = "Distribution of Bid Price",
-        yaxis = list(title = "%", zeroline = F))
+        yaxis = list(title = "Bid Price", zeroline = F))
   })
   
   # Most Frequent Bids 
@@ -171,10 +171,10 @@ server <- function(input, output) {
   
   # Bid Indicator
   output$bid_indicator_select <- renderUI({
-    varSelectInput("bid_indicator", label = "Bid Indicator",
+    varSelectInput("bid_indicator", label = "Select Bid Indicator",
                    df()[c(9,2,5,6)],
                    selected = df()[2],
-                   width = 250)
+                   width = 300)
   })
   
   # Bid Indicator According to Average Bid Price
@@ -260,6 +260,83 @@ server <- function(input, output) {
       ) %>% 
       hc_xAxis(title = list(text = "Date")) %>% 
       hc_yAxis(title = list(text = "Average Bid Price"))
+  })
+  
+  # Anomalies Tab
+  model_df <- reactive({
+    model_df <- select(df(), `Bid Price`, `Bid Opening Date`)
+    model_df$`Bid Opening Date` <- as.Date(model_df$`Bid Opening Date`)
+    model_df <- model_df %>% as.tibble()
+    names(model_df)[1] <- "Price"
+    names(model_df)[2] <- "date"
+    model_df <- model_df %>% 
+      tibbletime::as_tbl_time(index = date)
+    
+    model_df <- model_df[order(model_df$date),]
+    model_df <- model_df %>% 
+      as_period("daily")
+  })
+  
+  # Anomaly Detection
+  output$fig4 <- renderPlotly({
+    model_df() %>% 
+      time_decompose(Price) %>%
+      anomalize(remainder) %>%
+      time_recompose() %>%
+      plot_anomalies(time_recomposed = TRUE, ncol = 3, alpha_dots = 0.5) %>% 
+      ggplotly() %>% 
+      layout(
+        xaxis = list(rangeslider = list(type = "date")
+        )
+      )
+  })
+  
+  # Anomaly Detection Breakdown 
+  output$fig5 <- renderPlotly({
+    model_df() %>% 
+      time_decompose(Price, method = "stl", frequency = "auto", trend = "auto") %>%
+      anomalize(remainder, method = "gesd", alpha = 0.05, max_anoms = 0.2) %>%
+      plot_anomaly_decomposition() %>% ggplotly()
+  })
+  
+  # Anomaly Bids 
+  anomaly_observations <- reactive({
+    anomaly_observations <- model_df() %>% 
+      time_decompose(Price) %>%
+      anomalize(remainder) %>% 
+      time_recompose() %>%
+      filter(anomaly == 'Yes') %>% 
+      select(date, observed, anomaly) %>% 
+      as.data.frame()
+    names(anomaly_observations)[1] <- "Bid Opening Date"
+    names(anomaly_observations)[2] <- "Bid Price"
+    anomaly_observations
+  })
+  
+  # Bid Dataframe
+  bid_df <- reactive({
+    bid_df <- select(df(), `Bid Title`, `Bid Item`, `Bidder Name`, `Contact  Name`, 
+                     `Bid Opening Date`, `Bid Price`)
+    bid_df
+  })
+  
+  # Bid dataframe with anomaly observations 
+  full_anomaly_df <- reactive({
+    full_anomaly_df <- merge(anomaly_observations(), bid_df(), by = c("Bid Price"))
+    full_anomaly_df <- full_anomaly_df[order(full_anomaly_df$`Bid Opening Date.x`),]
+    full_anomaly_df <- full_anomaly_df %>% select(-`Bid Opening Date.y`)
+    names(full_anomaly_df)[2] <- "Bid Opening Date"
+    full_anomaly_df
+  })
+  
+  output$table3 <- renderDT({
+    DT::datatable(full_anomaly_df(),
+                  rownames = F,
+                  options = list(pageLength = 2, scrollX = TRUE, info = FALSE,
+                                 initComplete = JS(
+                                   "function(settings, json) {",
+                                   "$(this.api().table().header()).css({'background-color': '#1f77b4', 'color': '#fff'});",
+                                   "}")))
   })
   
 }
