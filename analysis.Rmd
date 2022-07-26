@@ -1,0 +1,1057 @@
+---
+title: "Analysis"
+author: "Eli Nimy"
+date: '2022-07-25'
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+library(tidyverse)
+library(plotly)
+library(highcharter)
+library(readxl)
+library(tigerstats)
+```
+
+
+
+```{r}
+df <- read_csv("bid-tabulations-1.csv")
+df
+```
+
+
+
+```{r}
+# Replace NA values with 0s 
+df <- df %>% mutate_at(vars("Bid Price"), ~replace_na(.,0))
+
+# Columns with Missing values
+names(which(colSums(is.na(df)) > 0))
+
+# Missing values in all indicators
+sapply(df, function(x) sum(is.na(x)))
+
+# Percentage of the missing values in all indicators
+sapply(df, function(x) sum(is.na(x))/nrow(df) * 100)
+```
+
+
+Source: https://www.geeksforgeeks.org/remove-rows-with-na-in-one-column-of-r-dataframe/
+```{r}
+# Handling Missing values 
+favstats(df$`Class Number`)
+
+# Replace NA values with 0s 
+df <- df %>% mutate_at(vars("Class Number"), ~replace_na(.,0))
+
+# Remove Bids without Bid Item values 
+df <- df %>% drop_na("Bid Item")
+```
+
+
+
+```{r}
+fig <- df %>%
+  plot_ly(
+    y = ~`Bid Price`,
+    type = 'violin',
+    box = list(visible = T),meanline = list(visible = T), x0 = 'Bid Price') 
+fig <- fig %>%
+  layout(
+    title = "Distribution of Bid Price",
+    yaxis = list(title = "%", zeroline = F))
+fig
+```
+
+
+
+```{r}
+# Bid Price Statistics 
+fav_stats(df$`Bid Price`)
+```
+
+
+
+```{r}
+nrow(df)
+```
+
+
+
+```{r}
+table(df$`Bid Title`)
+table(df$`Bid Item`)
+table(df$`Bidder Name`)
+table(df$`Contact  Name`)
+```
+
+
+
+```{r}
+library(lubridate)
+# Change date format from m/d/y to Y-m-d
+df$`Bid Opening Date` <- format(as.Date(df$`Bid Opening Date`, "%m/%d/%Y"), format = "%Y-%m-%d")
+average_bid_price_df$`Bid Opening Date` <- as.Date(average_bid_price_df$`Bid Opening Date`)
+```
+
+
+### Bid Prices overtime
+```{r}
+library(highcharter)
+average_bid_price_df <- df %>% group_by(`Bid Opening Date`) %>% 
+  summarise(Average_bid_price = round(mean(`Bid Price`),2))
+
+hchart(average_bid_price_df, "line", hcaes(x = `Bid Opening Date`, y = Average_bid_price)) %>% 
+  hc_title(
+    text = paste0("Average Bid Price Overtime")
+  ) %>% 
+  hc_colors("green") %>% 
+  hc_xAxis(title = list(text = "Date")) %>% 
+  hc_yAxis(title = list(text = "Average Bid Price"))
+```
+
+
+
+```{r}
+library(xts)
+
+bid_vp <- xts(x = average_bid_price_df$Average_bid_price, 
+              order.by = as.POSIXct(average_bid_price_df$`Bid Opening Date`))
+    highchart(type = "stock") %>%
+      hc_add_series(bid_vp,
+                    type = "line",
+                    color = "green") %>%
+      hc_title(text = "Average Bid Price Overtime") %>%
+      hc_yAxis(title = list(text = "Average Bid Price"),
+               opposite = FALSE)
+
+```
+
+
+## Contact Name Bid Prices Overtime
+```{r}
+# Contact Name Average Bid Price overtime 
+cn_avg_bid_price_df <- df %>% 
+  group_by(`Contact  Name`, `Bid Opening Date`) %>% 
+  summarise(Average_bid_price = round(mean(`Bid Price`),2))
+cn_avg_bid_price_df
+```
+
+
+
+```{r}
+cn_avg_bid_price_df %>% 
+  filter(`Contact  Name` %in% c("ALVIN K. PETTWAY", "ANNE-SHERLEY ALMONOR")) %>% 
+hchart("line", hcaes(x = `Bid Opening Date`, y = Average_bid_price, group = `Contact  Name`)) %>% 
+  hc_title(
+    text = paste0("Average Bid Price Overtime")
+  ) %>% 
+  hc_xAxis(title = list(text = "Date")) %>% 
+  hc_yAxis(title = list(text = "Average Bid Price"))
+```
+
+
+
+```{r}
+# Top 5 Contact Names According to Average Bid Price
+bid_category_df <- df %>% group_by(`Contact  Name`) %>% 
+  summarise(average_bid_price = round(mean(`Bid Price`),2)) %>% 
+  arrange(desc(average_bid_price))
+bid_category_df
+```
+
+
+
+```{r}
+# Top 5 Highest Average Bid Contact Name
+top5_bids <- bid_category_df %>% 
+  head(5)
+top5_bids
+```
+
+
+
+```{r}
+# Top 5 Highest Average Bid Contact Name
+bottom5_bids <- bid_category_df %>% 
+  tail(5)
+bottom5_bids
+```
+
+
+
+```{r}
+top5_bids %>% 
+hchart("column", hcaes(x = `Contact  Name`, y = average_bid_price)) %>% 
+    hc_title(
+    text = paste0("Top 5 Contact Name Average Bid Price")) %>% 
+  hc_colors("green") %>% 
+  hc_xAxis(title = list(text = "Contact Name")) %>% 
+  hc_yAxis(title = list(text = "Average Bid Price"))
+```
+
+
+
+```{r}
+bottom5_bids %>% 
+hchart("column", hcaes(x = `Contact  Name`, y = average_bid_price)) %>% 
+    hc_title(
+    text = paste0("Top 5 Contact Name Average Bid Price")) %>% 
+  hc_colors("green") %>% 
+  hc_xAxis(title = list(text = "Contact Name")) %>% 
+  hc_yAxis(title = list(text = "Average Bid Price"))
+```
+
+
+## Most Popular
+```{r}
+most_popular_bid_df1 <- df %>% group_by(`Contact  Name`) %>% 
+  summarise(requests = n()) %>% 
+  arrange(desc(requests))
+#cn <- paste0(most_popular_bid_df$`Contact  Name`[1],paste0(" - Bids : ", most_popular_bid_df$requests[1]))
+cn <- most_popular_bid_df$`Contact  Name`[1]
+cnb <- most_popular_bid_df$requests[1]
+print(cn)
+print(cnb)
+```
+
+
+
+```{r}
+most_popular_bid_df1 <- df %>% group_by(`Bid Title`) %>% 
+  summarise(requests = n()) %>% 
+  arrange(desc(requests))
+#bt <- paste0(most_popular_bid_df1$`Bid Title`[1],paste0(" - Bids : ", most_popular_bid_df1$requests[1]))
+bt <- most_popular_bid_df1$`Bid Title`[1]
+btb <- most_popular_bid_df1$requests[1]
+print(bt)
+print(btb)
+```
+
+
+
+```{r}
+most_popular_bid_df2 <- df %>% group_by(`Bid Item`) %>% 
+  summarise(requests = n()) %>% 
+  arrange(desc(requests))
+#bi <- paste0(most_popular_bid_df2$`Bid Item`[1],paste0(" - Bids : ", most_popular_bid_df2$requests[1]))
+bi <- most_popular_bid_df2$`Bid Item`[1]
+bib <- most_popular_bid_df2$requests[1]
+print(bi)
+print(bib)
+```
+
+
+
+```{r}
+most_popular_bid_df3 <- df %>% group_by(`Bidder Name`) %>% 
+  summarise(requests = n()) %>% 
+  arrange(desc(requests))
+#bn <- paste0(most_popular_bid_df3$`Bidder Name`[1],paste0(" - Bids : ", most_popular_bid_df3$requests[1]))
+bn <- most_popular_bid_df3$`Bidder Name`[1]
+bnb <- most_popular_bid_df3$requests[1]
+print(bn)
+print(bnb)
+```
+
+
+
+```{r}
+most_popular_df <- data.frame(
+  Indicator = c("Contact Name", "Bid Title", "Bid Item", "Bidder Name"),
+  Most_Popular = c(cn, bt, bi, bn),
+  Bids = c(cnb, btb, bib, bnb)
+)
+most_popular_df
+```
+
+
+
+```{r}
+library(DT)
+DT::datatable(most_popular_df,
+              rownames = F,
+              filter = "top",
+              options = list(pageLength = 5, scrollX = TRUE, info = FALSE))
+```
+
+
+## Summary Statistics
+```{r}
+options(scipen=999)
+f1 <- function(num) {
+        format(num, big.mark = ' ')
+}
+print(f1(max(df$`Bid Price`)))
+print(f1(min(df$`Bid Price`)))
+print(f1(sd(df$`Bid Price`)))
+print(f1(mean(df$`Bid Price`)))
+```
+
+
+### Anomaly Detection
+```{r}
+# tidy anomaly detection
+library(anomalize)
+```
+
+
+
+```{r}
+# Data for Anomaly Detection
+library(tibbletime)
+model_df <- select(df, `Bid Price`, `Bid Opening Date`)
+model_df$`Bid Opening Date` <- as.Date(model_df$`Bid Opening Date`)
+model_df <- model_df %>% as.tibble()
+names(model_df)[1] <- "Price"
+names(model_df)[2] <- "date"
+model_df <- model_df %>% 
+tibbletime::as_tbl_time(index = date)
+
+model_df <- model_df[order(model_df$date),]
+model_df <- model_df %>% 
+  as_period("daily")
+```
+
+
+
+```{r}
+library(tidyverse)
+library(plotly)
+library(highcharter)
+library(readxl)
+library(tigerstats)
+library(anomalize)
+```
+
+
+
+```{r}
+options(scipen=999)
+model_df %>% 
+  time_decompose(Price, method = "stl", frequency = "auto", trend = "auto") %>%
+  anomalize(remainder, method = "gesd", alpha = 0.05, max_anoms = 0.2) %>%
+  plot_anomaly_decomposition() %>% ggplotly()
+```
+
+
+
+```{r}
+model_df %>% 
+  time_decompose(Price) %>%
+  anomalize(remainder) %>%
+  time_recompose() %>%
+  plot_anomalies(time_recomposed = TRUE, ncol = 3, alpha_dots = 0.5) %>% 
+  ggplotly() %>% 
+  layout(
+        xaxis = list(rangeslider = list(type = "date")
+        )
+      )
+```
+
+
+
+```{r}
+anomaly_observations <- model_df %>% 
+  time_decompose(Price) %>%
+  anomalize(remainder) %>% 
+  time_recompose() %>%
+  filter(anomaly == 'Yes') %>% 
+  select(date, observed, anomaly) %>% 
+  as.data.frame()
+names(anomaly_observations)[1] <- "Bid Opening Date"
+names(anomaly_observations)[2] <- "Bid Price"
+anomaly_observations
+```
+
+
+
+```{r}
+# Bid Dataframe
+bid_df <- select(df, `Bid Title`, `Bid Item`, `Bidder Name`, `Contact  Name`, 
+                 `Bid Opening Date`, `Bid Price`)
+bid_df
+```
+
+
+
+```{r}
+full_anomaly_df <- merge(anomaly_observations, bid_df, by = c("Bid Price"))
+full_anomaly_df <- full_anomaly_df[order(full_anomaly_df$`Bid Opening Date.x`),]
+full_anomaly_df <- full_anomaly_df %>% select(-`Bid Opening Date.y`)
+names(full_anomaly_df)[2] <- "Bid Opening Date"
+full_anomaly_df
+```
+
+
+
+```{r}
+anomaly_observations
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```
+
+
+
+```{r}
+
+```

@@ -1,0 +1,47 @@
+Anomaly Detection in Public Procurements using the Open Contracting Data Standard
+https://www.researchgate.net/publication/342620446_Anomaly_Detection_in_Public_Procurements_using_the_Open_Contracting_Data_Standard
+
+Google search: anomaly detection on government datasets
+
+Procurement Dataset: https://data.world/datasets/procurement
+https://www.sas.com/en_za/insights/articles/risk-fraud/prevent-procurement-fraud.html
+
+Google: Anomaly detection in R
+NB: DC government is providing Purchase Card transaction data. The Purchase Card Program Management Office is part of the Office of Contracting and Procurement.
+
+In an effort to promote transparency and accountability, DC is providing Purchase Card transaction data to let taxpayers know how their tax dollars are being spent. Purchase Card transaction information is updated monthly. The Purchase Card Program Management Office is part of the Office of Contracting and Procurement.
+
+Dataset:
+Bid Tabulations: https://data.world/city-of-ny/9k82-ys7w
+
+Dataset Information:
+Bid Number: The seven (7) digit bid number that corresponds to given bid title a Competitive Sealed Bid (“CSB”) solicitation.
+
+Bid Title: The title description for a bid solicitation that corresponds to a given bids number a Competitive Sealed Bid (“CSB”) solicitation. A bid title may have more than one (1) bid item associated with it and may be distinguished from other items by its bid item number.
+
+Bid Item Number: The item number associated with the type of good or service listed under a Bid Title. Bid items are assigned consecutive numbers that range from one (1) to 999.
+
+Class Number: "A bid can consists of one or more Classes where similar or related items (goods and services) can be grouped into a “Class”. If multiple like items are grouped into a class, awards will be made by class. Class numbers can range from a blank class (where there is no class or only one class) to two (2) – 99 classes. "
+
+Bid Item: A description of the unit, or bid item, which is specified in a Competitive Sealed Bid (“CSB”) solicitation. A bid title may have more than one bid item which is distinguished from other items by its bid item number.
+
+Bidder Name: The name of the vendor that submitted a bid under a specified bid title. A vendor may submit a bid for one or more bid items specified in a Competitive Sealed Bid (“CSB”) solicitation.
+
+Bid Price: The unit price, in dollars, for the corresponding bid item submitted by a vendor under the specified bid title.
+
+Bid Opening Date: The opening date for a Competitive Sealed Bid (“CSB”) solicitation in M/DD/YYYY format.
+
+Contact Name: The name of the staff at the Department of Citywide Administrative Services (“DCAS”) who was listed as the point of contact on the original Competitive Sealed Bid (“CSB”) solicitation.
+
+
+Print Date: The date that a bid item was printed under the specified title for a Competitive Sealed Bid (“CSB”) solicitation in M/DD/YYYY format.
+
+Print Time: The time that a bid item was printed under the specified title for a Competitive Sealed Bid (“CSB”) solicitation in H:MM format where “H” ranges from 0 – 23.
+
+Add Bid statistics Boxes on Dshboard
+Min, Max, Mean, SD
+
+Dashboard Tabs
+Data Analysis 
+Anomaly detection
+Cluster Analysis 
