@@ -98,7 +98,6 @@ table(df$`Contact  Name`)
 library(lubridate)
 # Change date format from m/d/y to Y-m-d
 df$`Bid Opening Date` <- format(as.Date(df$`Bid Opening Date`, "%m/%d/%Y"), format = "%Y-%m-%d")
-average_bid_price_df$`Bid Opening Date` <- as.Date(average_bid_price_df$`Bid Opening Date`)
 ```
 
 
@@ -107,6 +106,7 @@ average_bid_price_df$`Bid Opening Date` <- as.Date(average_bid_price_df$`Bid Ope
 library(highcharter)
 average_bid_price_df <- df %>% group_by(`Bid Opening Date`) %>% 
   summarise(Average_bid_price = round(mean(`Bid Price`),2))
+average_bid_price_df$`Bid Opening Date` <- as.Date(average_bid_price_df$`Bid Opening Date`)
 
 hchart(average_bid_price_df, "line", hcaes(x = `Bid Opening Date`, y = Average_bid_price)) %>% 
   hc_title(
@@ -172,7 +172,7 @@ bid_category_df
 ```{r}
 # Top 5 Highest Average Bid Contact Name
 top5_bids <- bid_category_df %>% 
-  head(5)
+  slice_head(n=5)
 top5_bids
 ```
 
@@ -212,7 +212,7 @@ hchart("column", hcaes(x = `Contact  Name`, y = average_bid_price)) %>%
 
 ## Most Popular
 ```{r}
-most_popular_bid_df1 <- df %>% group_by(`Contact  Name`) %>% 
+most_popular_bid_df <- df %>% group_by(`Contact  Name`) %>% 
   summarise(requests = n()) %>% 
   arrange(desc(requests))
 #cn <- paste0(most_popular_bid_df$`Contact  Name`[1],paste0(" - Bids : ", most_popular_bid_df$requests[1]))
