@@ -41,7 +41,7 @@ Data Mining to Identify Anomalies in Public Procurement Rating Parameters
 ![Image 1](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img1.png) <br><br>
 **Average Bid Price Overtime**<br>
 ![Image 2](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img2.png) <br><br>
-**Top and Bottom 5 Bidder**<br>
+**Top and Bottom 5 Bid Information**<br>
 ![Image 3](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img3.png) <br><br>
 **Contact Person Bid Prices Overtime**<br>
 ![Image 4](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img4.png) <br><br>
