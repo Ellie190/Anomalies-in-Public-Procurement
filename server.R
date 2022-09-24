@@ -202,7 +202,8 @@ server <- function(input, output) {
   
   output$fig_top5_bp <- renderHighchart({
     top5_bids() %>% 
-      hchart("column", hcaes(x = !!input$bid_indicator, y = average_bid_price)) %>% 
+      hchart("column", hcaes(x = !!input$bid_indicator, y = average_bid_price),
+             dataLabels = list(enabled = TRUE)) %>% 
       hc_title(
         text = "Average Bid Price") %>% 
       hc_colors("#1f77b4") %>% 
@@ -212,7 +213,8 @@ server <- function(input, output) {
   
   output$fig_bottom5_bp <- renderHighchart({
     bottom5_bids() %>% 
-      hchart("column", hcaes(x = !!input$bid_indicator, y = average_bid_price)) %>% 
+      hchart("column", hcaes(x = !!input$bid_indicator, y = average_bid_price),
+             dataLabels = list(enabled = TRUE)) %>% 
       hc_title(
         text = "Average Bid Price") %>% 
       hc_colors("#1f77b4") %>% 
