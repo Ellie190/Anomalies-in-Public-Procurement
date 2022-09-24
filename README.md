@@ -31,10 +31,14 @@ Data Mining to Identify Anomalies in Public Procurement Rating Parameters
 **More Info on Tender Fraud:** https://www.purchasing-procurement-center.com/tender-fraud.html
 
 ## Resources 
-**RStudio Version:** 2022.07.1 Build 554
+**RStudio Version:** 2022.07.1 Build 554 <br>
 **Libraries:** `tidyverse`, `plotly`, `highcharter`, `lubridate`, `xts`, `DT`, `anomalize`, `tibbletime`, `shiny`, `bs4Dash`, `shinycssloaders`, `waiter` <br>
 **Public Procurement Dataset:** https://data.world/city-of-ny/9k82-ys7w <br>
 **Dataset Info:** https://data.cityofnewyork.us/City-Government/Bid-Tabulations/9k82-ys7w
 
 ## Dashboard Snippets
-
+![Image 1](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img1.png) <br><br>
+![Image 2](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img2.png) <br><br>
+![Image 3](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img3.png) <br><br>
+![Image 4](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img4.png) <br><br>
+![Image 5](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img5.png) <br><br>
