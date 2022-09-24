@@ -27,6 +27,9 @@ Data Mining to Identify Anomalies in Public Procurement Rating Parameters
 
 ## Resources 
 **RStudio Version:** 2022.07.1 Build 554
-**Libraries:** `tidyverse`, `plotly`, `highcharter`, `lubridate`, `xts`, `DT`, `anomalize`, `tibbletime`, `shiny`, `bs4Dash`, `shinycssloaders`, `waiter`
-*Public Procurement Dataset:** https://data.world/city-of-ny/9k82-ys7w
-*Dataset Info:** https://data.cityofnewyork.us/City-Government/Bid-Tabulations/9k82-ys7w
+**Libraries:** `tidyverse`, `plotly`, `highcharter`, `lubridate`, `xts`, `DT`, `anomalize`, `tibbletime`, `shiny`, `bs4Dash`, `shinycssloaders`, `waiter` <br>
+**Public Procurement Dataset:** https://data.world/city-of-ny/9k82-ys7w <br>
+**Dataset Info:** https://data.cityofnewyork.us/City-Government/Bid-Tabulations/9k82-ys7w
+
+## Dashboard Snippets
+
