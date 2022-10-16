@@ -7,7 +7,7 @@ Data Mining to Identify Anomalies in Public Procurement Rating Parameters
 - Built a R shiny dashboard with two main functionalities: (1) Descriptive Analysis and (2) anomaly detection on public procurement data
 - `Business Science anomalize package:` https://business-science.github.io/anomalize/index.html
 
-## Application Access
+## Application Access Link
  https://ds-analytics.shinyapps.io/Anomalies-in-Public-Procurement/
 
 ## Context 
@@ -39,7 +39,11 @@ Data Mining to Identify Anomalies in Public Procurement Rating Parameters
 
 ## Dashboard Snippets
 ![Image 1](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img1.png) <br><br>
+**Average Bid Price Overtime**<br>
 ![Image 2](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img2.png) <br><br>
+**Top and Bottom 5 Bid Information**<br>
 ![Image 3](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img3.png) <br><br>
+**Contact Person Bid Prices Overtime**<br>
 ![Image 4](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img4.png) <br><br>
-![Image 5](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img5.png) <br><br>
+**Anomaly Detection**<br>
+![Image 5](https://github.com/Ellie190/Anomalies-in-Public-Procurement/blob/main/img/img5.png) 
