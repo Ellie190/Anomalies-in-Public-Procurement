@@ -50,7 +50,7 @@ server <- function(input, output) {
   # Value boxes
   output$min_bp <- renderValueBox({
     valueBox(
-      value = min_bid_price(),
+      value = paste0("$ ",min_bid_price()),
       subtitle = "Minimum Bid Price",
       color = "danger",
       icon = icon("coins"),
@@ -61,7 +61,7 @@ server <- function(input, output) {
   
   output$max_bp <- renderValueBox({
     valueBox(
-      value = max_bid_price(),
+      value = paste0("$ ", max_bid_price()),
       subtitle = "Maximum Bid Price",
       color = "danger",
       icon = icon("coins"),
@@ -72,7 +72,7 @@ server <- function(input, output) {
   
   output$mean_bp <- renderValueBox({
     valueBox(
-      value = mean_bid_price(),
+      value = paste0("$ ", mean_bid_price()),
       subtitle = "Average Bid Price",
       color = "danger",
       icon = icon("coins"),
